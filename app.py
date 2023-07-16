@@ -6,7 +6,7 @@ def get_data():
     import pandas as pd
     from bs4 import BeautifulSoup
 
-    url = 'https://tg.i-c-a.su/rss/alexlesleynew?limit=50'
+    url = 'https://tg.i-c-a.su/rss/pogranichnyi_control?limit=100'
     feed = feedparser.parse(url)
 
     if feed.bozo:
