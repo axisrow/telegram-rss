@@ -1,26 +1,38 @@
-import feedparser
-import pandas as pd
-from bs4 import BeautifulSoup
+from flask import Flask, render_template
+app = Flask(__name__)
 
-url = 'https://tg.i-c-a.su/rss/alexlesleynew?limit=50'
-feed = feedparser.parse(url)
+def get_data():
+    import feedparser
+    import pandas as pd
+    from bs4 import BeautifulSoup
 
-if feed.bozo:
-  print(f"Error reading feed: {feed.bozo_exception}")
-else:
-  print(f"Feed read successfully, {len(feed.entries)} entries found")
+    url = 'https://tg.i-c-a.su/rss/alexlesleynew?limit=50'
+    feed = feedparser.parse(url)
 
-data = []
+    if feed.bozo:
+      print(f"Error reading feed: {feed.bozo_exception}")
+    else:
+      print(f"Feed read successfully, {len(feed.entries)} entries found")
 
-for entry in feed.entries:
-    cleaned_summary = BeautifulSoup(getattr(entry, 'summary', None), 'html.parser').get_text().split('#', 1)[0].replace("\n","")
-    data.append({
-        'title': getattr(entry, 'title', None),
-        'link': getattr(entry, 'link', None),
-        'published': pd.to_datetime(getattr(entry, 'published', None)),
-        'summary': cleaned_summary
-    })
+    data = []
 
-df = pd.DataFrame(data)
+    for entry in feed.entries:
+        cleaned_summary = BeautifulSoup(getattr(entry, 'summary', None), 'html.parser').get_text().split('#', 1)[0].replace("\n","")
+        data.append({
+            'title': getattr(entry, 'title', None),
+            'link': getattr(entry, 'link', None),
+            'published': pd.to_datetime(getattr(entry, 'published', None)),
+            'summary': cleaned_summary
+        })
 
-print(df)
+    df = pd.DataFrame(data)
+
+    return df['summary'].tolist()
+
+@app.route('/')
+def home():
+    summary = get_data()
+    return render_template('index.html', summary=summary)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
