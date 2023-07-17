@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>RSS Reader</title>
+</head>
 <body>
-    <h1>Summary</h1>
+    <form action="/" method="post">
+        <input type="text" name="url" placeholder="Введите RSS URL">
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if data %}
+    <!-- Вы можете отобразить данные здесь, например: -->
     <ul>
-    {% for item in summary %}
-        <li>{{ item }}</li>
-    {% endfor %}
+        {% for item in data %}
+        <li>{{ item.title }}: {{ item.summary }}</li>
+        {% endfor %}
     </ul>
+    {% endif %}
 </body>
 </html>
